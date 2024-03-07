@@ -60,7 +60,13 @@ $include_name = ($_REQUEST["include_patient_name"] == "true");
 $include_sex = ($_REQUEST["include_patient_sex"] == "true");
 $include_dob = ($_REQUEST["include_patient_birthday"] == "true");
 $include_pid = ($_REQUEST["include_patient_id"] == "true");
-
+$include_specimenid = ($_REQUEST["include_specimen_id"] == "true");
+$include_FACILITY = ($_REQUEST["include_facility"] == "true");
+$include_DateReceived = ($_REQUEST["include_date_received"] == "true");
+$include_RecipientName = ($_REQUEST["include_Recipient_Name"] == "true");
+$include_test_type = ($_REQUEST["include_test_type"] == "true");
+$include_test_date = ($_REQUEST["include_test_date"] == "true");
+$include_results = ($_REQUEST["include_results"] == "true");
 // Okay... let's build the SQL query
 
 // The headers for the spreadsheet must match the order of the columns/fields
@@ -86,6 +92,35 @@ if ($include_pid) {
     $headers[] = "Patient ID";
     $fields[] = "p.surr_id";
 }
+if ($include_specimenid) {
+    $headers[] = "Specimen ID";
+    $fields[] = "s.specimen_id";
+}
+if ($include_FACILITY) {
+    $headers[] = "Facility";
+    $fields[] = "s.specimen_id";
+}
+if ($include_DateReceived) {
+    $headers[] = "Date Received";
+    $fields[] = "s.date_recvd";
+}
+if ($include_RecipientName) {
+    $headers[] = "Recipient Name";
+    $fields[] = "s.date_recvd";
+}
+if ($include_test_type) {
+    $headers[] = "Test Type";
+    $fields[] = "tt.test_name";
+}
+if ($include_test_date) {
+    $headers[] = "Test Date";
+    $fields[] = "t.ts"; //timestamp
+}
+if ($include_results) {
+    $headers[] = "Results";
+    $fields[] = "t.result"; //timestamp
+}
+
 
 array_push($headers,
     "Specimen Type",
@@ -118,6 +153,7 @@ foreach($test_type_ids as $tt_idx => $test_type_id) {
         INNER JOIN specimen_type AS st ON s.specimen_type_id = st.specimen_type_id
         INNER JOIN test AS t ON s.specimen_id = t.specimen_id
         INNER JOIN patient AS p ON s.patient_id = p.patient_id
+        INNER JOIN test_type AS tt ON s.test_type_id = tt.test_type_id
         WHERE s.date_collected BETWEEN '$start_date' AND '$end_date'
         AND t.test_type_id = '$test_type_id';
 EOQ;
